@@ -10,7 +10,7 @@ import java.util.Random;
 public class Spikes {
     private Bitmap spike;
 
-    private float spikeWidth,spikeHeight,x = 100,xp = 1,y = 100,yp = 1,canvasH,canvasW;
+    private float spikeWidth,spikeHeight,x = 100,xp = 1,y = 500,yp = 1,canvasH,canvasW;
     Random r = new Random();
     private boolean ran = false;
 

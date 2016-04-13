@@ -2,8 +2,6 @@ package apps.tek.artemis.touchfollow;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 /**
@@ -31,8 +29,8 @@ public class Player {
         if (alive) {
             player = Bitmap.createScaledBitmap(player, canvas.getWidth() / 4, (int) ((double) (canvas.getWidth() / 4) / 0.86), false);
             getScale();
-            x = x - (playerWidth / 2);
-            canvas.drawBitmap(player, x, y, null);
+
+            canvas.drawBitmap(player, x - (playerWidth / 2), y, null);
         }
 
 

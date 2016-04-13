@@ -159,11 +159,11 @@ public class CustomView extends SurfaceView implements Runnable {
         }
 
         if (frames > 10) {
-            System.out.println(frames);
+
             for (int i = 0; i < spikeRect.length; i++) {
 
                 if (spikeRect[i] != null && player != null) {
-                    System.out.println(i);
+                    System.out.println("Checking REctangle: " + i);
                     if (Rect.intersects(player, spikeRect[i])) {
                         resetGame();
                         //enemy = 1;
@@ -200,13 +200,14 @@ public class CustomView extends SurfaceView implements Runnable {
                 public void run() {
 
                     while (runEnemy) {
-                        enemy++;
-                        initialiseEnemy(enemy);
                         try {
                             Thread.sleep((long) 6000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        enemy++;
+                        initialiseEnemy(enemy);
+
                     }
                 }
 
