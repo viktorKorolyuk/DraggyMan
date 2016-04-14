@@ -37,7 +37,8 @@ public class CustomView extends SurfaceView implements Runnable {
     private Paint background;
     Rect[] spikeRect;
     private int score;
-    private boolean turningOff = true;
+    private boolean turningOff = true, gameOff;
+
 
     //
 
@@ -58,34 +59,30 @@ public class CustomView extends SurfaceView implements Runnable {
         if (spikes == null) {
             spikes = new ArrayList<>(enemyNum);
         }
-        if (spikes != null) {
+        if (spikes != null && spikes.size() <= 20) {
             spikes.add(new Spikes(BitmapFactory.decodeResource(getResources(), R.drawable.spikesv1)));
         }
-        /**
-         for (int i = 0; i < enemyNum; i++) {
-         if(spikes[i] == null) {
-         spikes[i] = new Spikes(BitmapFactory.decodeResource(getResources(), R.drawable.spikesv1));
-         }
-         }
-         */
-
     }
 
 
     public void draw() {
         if (sh.getSurface().isValid()) {
-            canvas = sh.lockCanvas();
-            canvas.drawPaint(background);
-            pl.draw(canvas);
 
-            for (int i = 0; i < spikes.size(); i++) {
-                if (spikes.get(i) != null) {
-                    spikes.get(i).update();
-                    spikes.get(i).draw(canvas);
+            if (!gameOff) {
+
+                canvas = sh.lockCanvas();
+                canvas.drawPaint(background);
+                pl.draw(canvas);
+
+                for (int i = 0; i < spikes.size(); i++) {
+                    if (spikes.get(i) != null) {
+                        spikes.get(i).update();
+                        spikes.get(i).draw(canvas);
+                    }
                 }
+
+
             }
-
-
             sh.unlockCanvasAndPost(canvas);
         }
 
@@ -101,16 +98,16 @@ public class CustomView extends SurfaceView implements Runnable {
             case MotionEvent.ACTION_DOWN:
                 anim = true;
                 pl.update(x, y + 15);
-            //    System.out.println("" + x + " " + y);
+                //    System.out.println("" + x + " " + y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 pl.update(x, y + 15);
-           //     System.out.println("" + x + " " + y);
+                //     System.out.println("" + x + " " + y);
                 break;
             case MotionEvent.ACTION_UP:
                 anim = false;
                 pl.update(x, y + 15);
-           //     System.out.println("" + x + " " + y);
+                //     System.out.println("" + x + " " + y);
                 break;
             default:
                 return false;
@@ -130,7 +127,7 @@ public class CustomView extends SurfaceView implements Runnable {
                 checkCollision();
             }
             frames++;
-         //   System.out.println(frames);
+            //   System.out.println(frames);
 
 
             try {
@@ -147,38 +144,38 @@ public class CustomView extends SurfaceView implements Runnable {
     private void checkCollision() {
         Rect player = pl.returnBounds();
 
-        //initiaise the rectangles
+        //initialise the rectangles
 
 
         spikeRect = new Rect[spikes.size()];
-
-        for (int s = 0; s < spikes.size(); s++) {
-            if (spikes.get(s) != null) {
-                spikeRect[s] = spikes.get(s).returnBounds();
-            }
-        }
-
-        if (frames > 10) {
-
-            for (int i = 0; i < spikeRect.length; i++) {
-
-                if (spikeRect[i] != null && player != null) {
-                    System.out.println("Checking REctangle: " + i);
-                    if (Rect.intersects(player, spikeRect[i])) {
-                        resetGame();
-                        //enemy = 1;
-                        frames = 0;
-
-                    } else {
-                        addEnemyThread();
-
-                    }
+        if (spikes != null) {
+            for (int s = 0; s < spikes.size(); s++) {
+                if (spikes.get(s) != null) {
+                    spikeRect[s] = spikes.get(s).returnBounds();
                 }
             }
 
 
-        }
+            if (frames > 10) {
 
+                for (int i = 0; i < spikeRect.length; i++) {
+
+                    if (spikeRect[i] != null && player != null) {
+                        System.out.println("Checking Rectangle #" + i);
+                        if (Rect.intersects(player, spikeRect[i])) {
+                            stopGame();
+
+                            frames = 0;
+
+                        } else {
+                            addEnemyThread();
+
+                        }
+                    }
+                }
+
+            }
+        }
 
     }
 
@@ -231,6 +228,26 @@ public class CustomView extends SurfaceView implements Runnable {
             Log.e("Error:", "joining thread");
         }
         turningOff = true;
+        frames = 0;
+    }
+
+    private void stopGame() {
+        pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
+        spikes = null;
+        enemy = 0;
+        initialiseEnemy(enemy);
+        runEnemy = false;
+        enemyAdd = false;
+        try {
+             addEnemy.interrupt(); //thanks to my dad for suggesting this code, it really helped :)
+             addEnemy.join();
+
+
+        } catch (InterruptedException e) {
+            Log.e("Error:", "joining thread");
+        }
+        turningOff = true;
+
     }
 
 
