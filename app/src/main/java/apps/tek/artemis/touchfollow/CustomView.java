@@ -1,6 +1,7 @@
 package apps.tek.artemis.touchfollow;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -37,6 +38,7 @@ public class CustomView extends SurfaceView implements Runnable {
     private int score;
     private boolean turningOff = true;
     private int mode;
+    private Bitmap buttonStart;
 
 
     //
@@ -50,6 +52,8 @@ public class CustomView extends SurfaceView implements Runnable {
 
         background = new Paint();
         background.setColor(Color.WHITE);
+        buttonStart = BitmapFactory.decodeResource(getResources(),R.drawable.playbutton);
+        buttonStart = Bitmap.createScaledBitmap(buttonStart,canvas.getWidth()/2,buttonStart.getHeight(),false);
 
 
     }
@@ -83,7 +87,9 @@ public class CustomView extends SurfaceView implements Runnable {
 
 
             } else if(mode == 1){
+                canvas.drawColor(Color.rgb(255, 102, 102));
 
+                canvas.drawBitmap(buttonStart,canvas.getWidth()/4, canvas.getHeight(), null);
             }
             sh.unlockCanvasAndPost(canvas);
         }
