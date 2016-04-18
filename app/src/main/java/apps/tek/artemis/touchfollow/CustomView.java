@@ -87,6 +87,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
 
             } else if (mode == 1) {
+                //start
                 canvas.drawColor(Color.rgb(255, 102, 102));
                 if (!runOnce) {
                     buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
@@ -94,16 +95,27 @@ public class CustomView extends SurfaceView implements Runnable {
                 }
                 canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
                 updatePlayRect();
-             //   canvas.drawRect(play, new Paint(Color.BLUE));
+                //   canvas.drawRect(play, new Paint(Color.BLUE));
             }
             sh.unlockCanvasAndPost(canvas);
-        }
 
+        } else if (mode == 2) {
+            //lost
+            canvas.drawColor(Color.rgb(255, 102, 102));
+            if (!runOnce) {
+                buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
+                runOnce = true;
+            }
+            canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
+            updatePlayRect();
+            //   canvas.drawRect(play, new Paint(Color.BLUE));
+        }
+        sh.unlockCanvasAndPost(canvas);
 
     }
 
     private void updatePlayRect() {
-        play = new Rect((canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas.getHeight()/2), buttonStart.getWidth() + (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas.getHeight()/2));
+        play = new Rect((canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas.getHeight() / 2), buttonStart.getWidth() + (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas.getHeight() / 2));
 
     }
 
@@ -112,28 +124,28 @@ public class CustomView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         x = event.getX();
         y = event.getY();
-        if(mode == 0){
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                anim = true;
-                pl.update(x, y + 15);
-                //    System.out.println("" + x + " " + y);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                pl.update(x, y + 15);
-                //     System.out.println("" + x + " " + y);
-                break;
-            case MotionEvent.ACTION_UP:
-                anim = false;
-                pl.update(x, y + 15);
-                //     System.out.println("" + x + " " + y);
-                break;
-            default:
-                return false;
+        if (mode == 0) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    anim = true;
+                    pl.update(x, y + 15);
+                    //    System.out.println("" + x + " " + y);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    pl.update(x, y + 15);
+                    //     System.out.println("" + x + " " + y);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    anim = false;
+                    pl.update(x, y + 15);
+                    //     System.out.println("" + x + " " + y);
+                    break;
+                default:
+                    return false;
             }
 
 
-        } else if (mode == 1){
+        } else if (mode == 1) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
 
@@ -142,7 +154,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
                     break;
                 case MotionEvent.ACTION_UP:
-                    if(play.contains((int)x,(int)y)){
+                    if (play.contains((int) x, (int) y)) {
                         System.out.println("YES");
                         mode = 0;
                     }
