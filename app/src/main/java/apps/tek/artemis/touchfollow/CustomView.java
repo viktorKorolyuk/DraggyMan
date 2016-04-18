@@ -13,9 +13,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 
-/**
- * Created by viktor on 16-03-28.
- */
+
 public class CustomView extends SurfaceView implements Runnable {
 
 
@@ -37,7 +35,8 @@ public class CustomView extends SurfaceView implements Runnable {
     private Paint background;
     Rect[] spikeRect;
     private int score;
-    private boolean turningOff = true, gameOff;
+    private boolean turningOff = true;
+    private int mode;
 
 
     //
@@ -68,9 +67,10 @@ public class CustomView extends SurfaceView implements Runnable {
     public void draw() {
         if (sh.getSurface().isValid()) {
 
-            if (!gameOff) {
+            canvas = sh.lockCanvas();
 
-                canvas = sh.lockCanvas();
+            if (mode == 0) {
+
                 canvas.drawPaint(background);
                 pl.draw(canvas);
 
@@ -81,6 +81,8 @@ public class CustomView extends SurfaceView implements Runnable {
                     }
                 }
 
+
+            } else if(mode == 1){
 
             }
             sh.unlockCanvasAndPost(canvas);
