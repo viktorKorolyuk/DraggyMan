@@ -26,7 +26,7 @@ public class CustomView extends SurfaceView implements Runnable {
     boolean enemyAdd = false;
     private float y, x;
     private Player pl;
-    private boolean runEnemy;
+    private boolean runEnemy, runOnce = false;
     private ArrayList<Spikes> spikes;
     private int enemy = 1;
     private boolean running, anim;
@@ -37,8 +37,9 @@ public class CustomView extends SurfaceView implements Runnable {
     Rect[] spikeRect;
     private int score;
     private boolean turningOff = true;
-    private int mode;
+    private int mode = 1;
     private Bitmap buttonStart;
+    Rect play;
 
 
     //
@@ -52,8 +53,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
         background = new Paint();
         background.setColor(Color.WHITE);
-        buttonStart = BitmapFactory.decodeResource(getResources(),R.drawable.playbutton);
-        buttonStart = Bitmap.createScaledBitmap(buttonStart,canvas.getWidth()/2,buttonStart.getHeight(),false);
+        buttonStart = BitmapFactory.decodeResource(getResources(), R.drawable.playbutton);
 
 
     }
@@ -86,14 +86,24 @@ public class CustomView extends SurfaceView implements Runnable {
                 }
 
 
-            } else if(mode == 1){
+            } else if (mode == 1) {
                 canvas.drawColor(Color.rgb(255, 102, 102));
-
-                canvas.drawBitmap(buttonStart,canvas.getWidth()/4, canvas.getHeight(), null);
+                if (!runOnce) {
+                    buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
+                    runOnce = true;
+                }
+                canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
+                updatePlayRect();
+             //   canvas.drawRect(play, new Paint(Color.BLUE));
             }
             sh.unlockCanvasAndPost(canvas);
         }
 
+
+    }
+
+    private void updatePlayRect() {
+        play = new Rect((canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas.getHeight()/2), buttonStart.getWidth() + (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas.getHeight()/2));
 
     }
 
@@ -102,6 +112,7 @@ public class CustomView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent event) {
         x = event.getX();
         y = event.getY();
+        if(mode == 0){
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 anim = true;
@@ -119,7 +130,27 @@ public class CustomView extends SurfaceView implements Runnable {
                 break;
             default:
                 return false;
+            }
 
+
+        } else if (mode == 1){
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+
+                    break;
+                case MotionEvent.ACTION_MOVE:
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if(play.contains((int)x,(int)y)){
+                        System.out.println("YES");
+                        mode = 0;
+                    }
+
+                    break;
+                default:
+                    return false;
+            }
         }
         invalidate();
         return true;
@@ -131,13 +162,14 @@ public class CustomView extends SurfaceView implements Runnable {
     public void run() {
         while (running) {
             draw();
-            if (turningOff) {
-                checkCollision();
+            if (mode == 0) {
+                if (turningOff) {
+                    checkCollision();
+                }
+                frames++;
+                //   System.out.println(frames);
+
             }
-            frames++;
-            //   System.out.println(frames);
-
-
             try {
                 //  System.out.println("slept");
                 Thread.sleep(speedMS);
@@ -247,8 +279,8 @@ public class CustomView extends SurfaceView implements Runnable {
         runEnemy = false;
         enemyAdd = false;
         try {
-             addEnemy.interrupt(); //thanks to my dad for suggesting this code, it really helped :)
-             addEnemy.join();
+            addEnemy.interrupt(); //thanks to my dad for suggesting this code, it really helped :)
+            addEnemy.join();
 
 
         } catch (InterruptedException e) {
