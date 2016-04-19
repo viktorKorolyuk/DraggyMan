@@ -26,6 +26,7 @@ public class CustomView extends SurfaceView implements Runnable {
     boolean enemyAdd = false;
     private float y, x;
     private Player pl;
+    private Background bg;
     private boolean runEnemy, runOnce = false;
     private ArrayList<Spikes> spikes;
     private int enemy = 1;
@@ -49,6 +50,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
         sh = getHolder();
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
+        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.endless_pattern_bg));
         initialiseEnemy(enemy);
 
         background = new Paint();
@@ -76,6 +78,9 @@ public class CustomView extends SurfaceView implements Runnable {
             if (mode == 0) {
 
                 canvas.drawPaint(background);
+                bg.update();
+                bg.draw(canvas);
+
                 pl.draw(canvas);
 
                 for (int i = 0; i < spikes.size(); i++) {
@@ -95,22 +100,11 @@ public class CustomView extends SurfaceView implements Runnable {
                 }
                 canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
                 updatePlayRect();
-                //   canvas.drawRect(play, new Paint(Color.BLUE));
+
             }
             sh.unlockCanvasAndPost(canvas);
 
-        } else if (mode == 2) {
-            //lost
-            canvas.drawColor(Color.rgb(255, 102, 102));
-            if (!runOnce) {
-                buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
-                runOnce = true;
-            }
-            canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
-            updatePlayRect();
-            //   canvas.drawRect(play, new Paint(Color.BLUE));
         }
-        sh.unlockCanvasAndPost(canvas);
 
     }
 
@@ -267,21 +261,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
     }
 
-    private void resetGame() {
-        pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
-        spikes = null;
-        enemy = 1;
-        initialiseEnemy(enemy);
-        runEnemy = false;
-        enemyAdd = false;
-        try {
-            addEnemy.join();
-        } catch (InterruptedException e) {
-            Log.e("Error:", "joining thread");
-        }
-        turningOff = true;
-        frames = 0;
-    }
+
 
     private void stopGame() {
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
