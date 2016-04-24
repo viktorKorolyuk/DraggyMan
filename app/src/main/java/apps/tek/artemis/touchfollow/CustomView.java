@@ -32,8 +32,9 @@ public class CustomView extends SurfaceView implements Runnable {
     private int enemy = 1;
     private boolean running, anim;
     private int stage = 0;
-    private long speedMS = 1;
+    private long speedMS = 10;
     private long frames;
+    private long WIDTH, HEIGHT;
     private Paint background;
     Rect[] spikeRect;
     private int score;
@@ -50,7 +51,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
         sh = getHolder();
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
-        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.endless_pattern_bg));
+        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.endless_pattern_bg), this);
         initialiseEnemy(enemy);
 
         background = new Paint();
@@ -70,14 +71,24 @@ public class CustomView extends SurfaceView implements Runnable {
     }
 
 
+    public long getWIDTH() {
+        return WIDTH;
+    }
+
+    public long getHEIGHT() {
+        return HEIGHT;
+    }
+
     public void draw() {
         if (sh.getSurface().isValid()) {
 
             canvas = sh.lockCanvas();
+            WIDTH = canvas.getWidth();
+            HEIGHT = canvas.getHeight();
 
             if (mode == 0) {
 
-                canvas.drawPaint(background);
+                canvas.drawPaint(background); //code to clean page
                 bg.update();
                 bg.draw(canvas);
 
@@ -158,7 +169,7 @@ public class CustomView extends SurfaceView implements Runnable {
                     return false;
             }
         }
-        invalidate();
+       // invalidate();
         return true;
 
     }
@@ -249,7 +260,7 @@ public class CustomView extends SurfaceView implements Runnable {
                             e.printStackTrace();
                         }
                         enemy++;
-                        initialiseEnemy(enemy);
+                    //qu    initialiseEnemy(enemy);
 
                     }
                 }

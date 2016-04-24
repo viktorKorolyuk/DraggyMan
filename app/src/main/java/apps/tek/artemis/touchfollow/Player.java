@@ -51,7 +51,7 @@ public class Player {
 
     public Rect returnBounds() {
 
-        return new Rect((int) x, (int) y, (int) x + ((int) (playerWidth / 2)), (int) y + ((int) playerHeight));
+        return new Rect((int) x - (int)(playerWidth / 2), (int) y, (int) x + ((int) (playerWidth / 2)), (int) y + ((int) playerHeight));
     }
 
 
