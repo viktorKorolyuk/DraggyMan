@@ -58,7 +58,6 @@ public class CustomView extends SurfaceView implements Runnable {
         background.setColor(Color.WHITE);
         buttonStart = BitmapFactory.decodeResource(getResources(), R.drawable.playbutton);
 
-
     }
 
     private void initialiseEnemy(int enemyNum) {

@@ -19,8 +19,9 @@ public class Background {
     public void update(){
         y+=dy;
 
-       // y2+= dy;
-       // y3+= dy;
+        if(y >= vv.getHeight()){
+            y = 0;
+        }
 
     }
     public void draw(Canvas canvas){
@@ -28,25 +29,14 @@ public class Background {
             bg = Bitmap.createScaledBitmap(bg, canvas.getWidth(), canvas.getHeight(), false);
             runOnce = true;
         }
-        /**
-         *
-         * I am writing NEW code to see if it works better. Even though I could probably solve the problem... it would take a while, and hopefully android has a system set that will allow me to do something different.
+
+
         canvas.drawBitmap(bg,x,y,null);
-        if(y >= canvas.getHeight()){
-            this.y = 0;
+
+        if(y >= 0){
+            canvas.drawBitmap(bg,x,y - vv.getHeight(),null); //fill in blank space
         }
 
-        canvas.drawBitmap(bg,x,y2 - canvas.getHeight(),null);
-        if(y2 >= canvas.getHeight() * 2){
-            this.y2 = 0;
-        }
-        canvas.drawBitmap(bg,x,y3 - (canvas.getHeight() * 2),null);
-        if(y3 >= (canvas.getHeight() * 3)){
-            this.y3 = 0;
-        }
-//[1,2],[1,2],[1,2,3] (repeat)
-
-         */
 
     }
 }
