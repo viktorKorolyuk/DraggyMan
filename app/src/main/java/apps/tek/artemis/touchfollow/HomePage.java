@@ -1,6 +1,7 @@
 package apps.tek.artemis.touchfollow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -87,7 +88,11 @@ public class HomePage extends SurfaceView implements Runnable {
                 break;
             case MotionEvent.ACTION_UP:
                 if (play.contains((int) x, (int) y)) {
-                    System.out.println("YES");
+                   Intent i = new Intent(getContext(), CustomView.class);
+                    getContext().startActivity(i);
+
+
+
                     mode = 0;
                 }
 
@@ -105,12 +110,6 @@ public class HomePage extends SurfaceView implements Runnable {
     public void run() {
         while (running) {
             draw();
-            if (mode == 0) {
-                if (turningOff) {
-
-                }
-
-
             }
             try {
                 //  System.out.println("slept");
@@ -121,7 +120,7 @@ public class HomePage extends SurfaceView implements Runnable {
             }
 
         }
-    }
+
 
 
     public void resume() {
