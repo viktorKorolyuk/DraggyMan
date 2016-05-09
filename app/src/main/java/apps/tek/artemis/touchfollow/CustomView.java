@@ -1,7 +1,6 @@
 package apps.tek.artemis.touchfollow;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,11 +17,11 @@ import java.util.ArrayList;
 public class CustomView extends SurfaceView implements Runnable {
 
 
-    Thread th = null;
-    SurfaceHolder sh;
-    Canvas canvas = null;
-    Thread animationFrame;
-    Thread addEnemy;
+    private Thread th = null;
+    private SurfaceHolder sh;
+    private Canvas canvas = null;
+    private Thread animationFrame;
+    private Thread addEnemy;
     boolean enemyAdd = false;
     private float y, x;
     private Player pl;
@@ -40,23 +39,22 @@ public class CustomView extends SurfaceView implements Runnable {
     private int score;
     private boolean turningOff = true;
     private int mode = 1;
-    private Bitmap buttonStart;
-    Rect play;
 
 
-    //
+
+
 
     public CustomView(Context context) {
         super(context);
 
         sh = getHolder();
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
-        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.endless_pattern_bg), this);
+
         initialiseEnemy(enemy);
 
         background = new Paint();
         background.setColor(Color.WHITE);
-        buttonStart = BitmapFactory.decodeResource(getResources(), R.drawable.playbutton);
+
 
     }
 
@@ -70,13 +68,6 @@ public class CustomView extends SurfaceView implements Runnable {
     }
 
 
-    public long getWIDTH() {
-        return WIDTH;
-    }
-
-    public long getHEIGHT() {
-        return HEIGHT;
-    }
 
     public void draw() {
         if (sh.getSurface().isValid()) {
@@ -101,16 +92,6 @@ public class CustomView extends SurfaceView implements Runnable {
                 }
 
 
-            } else if (mode == 1) {
-                //start
-                canvas.drawColor(Color.rgb(255, 102, 102));
-                if (!runOnce) {
-                    buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
-                    runOnce = true;
-                }
-                canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
-                updatePlayRect();
-
             }
             sh.unlockCanvasAndPost(canvas);
 
@@ -118,56 +99,36 @@ public class CustomView extends SurfaceView implements Runnable {
 
     }
 
-    private void updatePlayRect() {
-        play = new Rect((canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas.getHeight() / 2), buttonStart.getWidth() + (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas.getHeight() / 2));
 
-    }
 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         x = event.getX();
         y = event.getY();
-        if (mode == 0) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    anim = true;
-                    pl.update(x, y + 15);
-                    //    System.out.println("" + x + " " + y);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    pl.update(x, y + 15);
-                    //     System.out.println("" + x + " " + y);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    anim = false;
-                    pl.update(x, y + 15);
-                    //     System.out.println("" + x + " " + y);
-                    break;
-                default:
-                    return false;
-            }
 
-
-        } else if (mode == 1) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-
-                    break;
-                case MotionEvent.ACTION_MOVE:
-
-                    break;
-                case MotionEvent.ACTION_UP:
-                    if (play.contains((int) x, (int) y)) {
-                        System.out.println("YES");
-                        mode = 0;
-                    }
-
-                    break;
-                default:
-                    return false;
-            }
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                anim = true;
+                pl.update(x, y + 15);
+                //    System.out.println("" + x + " " + y);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                pl.update(x, y + 15);
+                //     System.out.println("" + x + " " + y);
+                break;
+            case MotionEvent.ACTION_UP:
+                anim = false;
+                pl.update(x, y + 15);
+                //     System.out.println("" + x + " " + y);
+                break;
+            default:
+                return false;
         }
+
+
+
+
        // invalidate();
         return true;
 

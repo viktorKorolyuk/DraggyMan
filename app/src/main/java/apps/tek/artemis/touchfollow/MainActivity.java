@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class MainActivity extends Activity {
-    HomePage view;
+    private HomePage view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -17,29 +17,26 @@ import android.view.SurfaceView;
 public class HomePage extends SurfaceView implements Runnable {
 
 
-    Thread th = null;
-    SurfaceHolder sh;
-    Canvas canvas = null;
-    Thread animationFrame;
+   private Thread th = null;
+    SurfaceHolder sh1;
+    Canvas canvas1 = null;
+   private Thread animationFrame;
 
     private float y, x;
-
     private boolean runEnemy, runOnce = false;
-
-    private boolean running, anim;
-    private int stage = 0;
+    private boolean running;
     private long speedMS = 10;
-
     private Paint background;
-
-    private boolean turningOff = true;
-    private int mode = 1;
     private Bitmap buttonStart;
     Rect play;
 
 
     public HomePage(Context context) {
         super(context);
+
+
+        sh1 = getHolder();
+
 
 
         background = new Paint();
@@ -50,26 +47,30 @@ public class HomePage extends SurfaceView implements Runnable {
 
 
     public void draw() {
-        if (sh.getSurface().isValid()) {
+        try {
+            if (sh1.getSurface().isValid()) {
 
+                canvas1 = sh1.lockCanvas();
 
-            //start
-            canvas.drawColor(Color.rgb(255, 102, 102));
-            if (!runOnce) {
-                buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas.getWidth() / 2, (int) ((double) (canvas.getWidth() / 2) / 1.1946308724), false);
-                runOnce = true;
+                canvas1.drawColor(Color.rgb(255, 102, 102));
+                if (!runOnce) {
+                    buttonStart = Bitmap.createScaledBitmap(buttonStart, canvas1.getWidth() / 2, (int) ((double) (canvas1.getWidth() / 2) / 1.1946308724), false);
+                    runOnce = true;
+                }
+                canvas1.drawBitmap(buttonStart, (canvas1.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas1.getHeight() / 2, null);
+                updatePlayRect();
+
             }
-            canvas.drawBitmap(buttonStart, (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), canvas.getHeight() / 2, null);
-            updatePlayRect();
-
+            sh1.unlockCanvasAndPost(canvas1);
+        }catch(Exception e){
+            e.printStackTrace();
         }
-        sh.unlockCanvasAndPost(canvas);
 
 
     }
 
     private void updatePlayRect() {
-        play = new Rect((canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas.getHeight() / 2), buttonStart.getWidth() + (canvas.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas.getHeight() / 2));
+        play = new Rect((canvas1.getWidth() / 2) - (buttonStart.getWidth() / 2), (canvas1.getHeight() / 2), buttonStart.getWidth() + (canvas1.getWidth() / 2) - (buttonStart.getWidth() / 2), buttonStart.getHeight() + (canvas1.getHeight() / 2));
 
     }
 
@@ -88,12 +89,9 @@ public class HomePage extends SurfaceView implements Runnable {
                 break;
             case MotionEvent.ACTION_UP:
                 if (play.contains((int) x, (int) y)) {
-                   Intent i = new Intent(getContext(), CustomView.class);
-                    getContext().startActivity(i);
+                 Intent i = new Intent(getContext(), GameActivity.class);
+                   getContext().startActivity(i);
 
-
-
-                    mode = 0;
                 }
 
                 break;
@@ -110,17 +108,16 @@ public class HomePage extends SurfaceView implements Runnable {
     public void run() {
         while (running) {
             draw();
-            }
-            try {
-                //  System.out.println("slept");
-                Thread.sleep(speedMS);
+        }
+        try {
+            //  System.out.println("slept");
+            Thread.sleep(speedMS);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+    }
 
 
     public void resume() {
@@ -134,7 +131,7 @@ public class HomePage extends SurfaceView implements Runnable {
         running = false;
         try {
             th.join();
-            animationFrame.join();
+
         } catch (InterruptedException e) {
             Log.e("Error:", "joining thread");
         }

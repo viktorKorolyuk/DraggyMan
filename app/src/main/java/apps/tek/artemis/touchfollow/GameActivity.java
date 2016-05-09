@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class GameActivity extends Activity {
-    HomePage view;
+   private CustomView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-            view = new HomePage(this);
+            view = new CustomView(this);
         setContentView(view);
     }
     // This method executes when the player starts the game
