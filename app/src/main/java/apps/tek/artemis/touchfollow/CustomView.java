@@ -22,11 +22,12 @@ public class CustomView extends SurfaceView implements Runnable {
     private Canvas canvas = null;
     private Thread animationFrame;
     private Thread addEnemy;
+    Thread timer = null;
     boolean enemyAdd = false;
     private float y, x;
     private Player pl;
     private Background bg;
-    private boolean runEnemy, runOnce = false;
+    private boolean runEnemy;
     private ArrayList<Spikes> spikes;
     private int enemy = 1;
     private boolean running, anim;
@@ -36,11 +37,10 @@ public class CustomView extends SurfaceView implements Runnable {
     private long WIDTH, HEIGHT;
     private Paint background;
     Rect[] spikeRect;
-    private int score;
+    int score = 0;
+    private Paint paint;
+
     private boolean turningOff = true;
-    private int mode = 1;
-
-
 
 
 
@@ -48,10 +48,12 @@ public class CustomView extends SurfaceView implements Runnable {
         super(context);
 
         sh = getHolder();
+
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
-
         initialiseEnemy(enemy);
+        paint = new Paint();
 
+        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.endless_pattern_bg), this);
         background = new Paint();
         background.setColor(Color.WHITE);
 
@@ -68,15 +70,23 @@ public class CustomView extends SurfaceView implements Runnable {
     }
 
 
+    public long getHEIGHT() {
+        return HEIGHT;
+    }
+
+    public long getWIDTH() {
+        return WIDTH;
+    }
 
     public void draw() {
+
         if (sh.getSurface().isValid()) {
 
             canvas = sh.lockCanvas();
             WIDTH = canvas.getWidth();
             HEIGHT = canvas.getHeight();
 
-            if (mode == 0) {
+
 
                 canvas.drawPaint(background); //code to clean page
                 bg.update();
@@ -89,13 +99,23 @@ public class CustomView extends SurfaceView implements Runnable {
                         spikes.get(i).update();
                         spikes.get(i).draw(canvas);
                     }
+
+
+                    paint.setColor(Color.BLACK);
+
+                    paint.setTextSize(50);
+                    paint.setFakeBoldText(true);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    canvas.drawText("Score: " + score, (canvas.getWidth() / 2), canvas.getHeight() - paint.getTextSize(), paint);
+
+
+
                 }
-
-
-            }
             sh.unlockCanvasAndPost(canvas);
 
+
         }
+
 
     }
 
@@ -139,10 +159,10 @@ public class CustomView extends SurfaceView implements Runnable {
     public void run() {
         while (running) {
             draw();
-            if (mode == 0) {
+
                 if (turningOff) {
                     checkCollision();
-                }
+
                 frames++;
                 //   System.out.println(frames);
 
@@ -161,9 +181,7 @@ public class CustomView extends SurfaceView implements Runnable {
     private void checkCollision() {
         Rect player = pl.returnBounds();
 
-        //initialise the rectangles
-
-
+        //initialise the rectangles in a loop
         spikeRect = new Rect[spikes.size()];
         if (spikes != null) {
             for (int s = 0; s < spikes.size(); s++) {
@@ -172,13 +190,12 @@ public class CustomView extends SurfaceView implements Runnable {
                 }
             }
 
-
-            if (frames > 10) {
+            if (frames > 10) { //invincibility frames
 
                 for (int i = 0; i < spikeRect.length; i++) {
 
                     if (spikeRect[i] != null && player != null) {
-                        System.out.println("Checking Rectangle #" + i);
+                     //   System.out.println("Checking Rectangle #" + i);
                         if (Rect.intersects(player, spikeRect[i])) {
                             stopGame();
 
@@ -216,11 +233,11 @@ public class CustomView extends SurfaceView implements Runnable {
                     while (runEnemy) {
                         try {
                             Thread.sleep((long) 6000);
-                        } catch (Exception e) {
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        enemy++;
-                    //qu    initialiseEnemy(enemy);
+                      //  enemy++;
+                        initialiseEnemy(enemy);
 
                     }
                 }
@@ -238,6 +255,7 @@ public class CustomView extends SurfaceView implements Runnable {
         pl = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po1));
         spikes = null;
         enemy = 0;
+        score = 0;
         initialiseEnemy(enemy);
         runEnemy = false;
         enemyAdd = false;
@@ -283,6 +301,22 @@ public class CustomView extends SurfaceView implements Runnable {
             }
         });
         animationFrame.start();
+        timer = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (running) {
+
+                    System.out.println("Score: " + score);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    score++;
+                }
+            }
+        });
+        timer.start();
     }
 
     public void pause() {
@@ -290,6 +324,8 @@ public class CustomView extends SurfaceView implements Runnable {
         try {
             th.join();
             animationFrame.join();
+            timer.interrupt();
+            timer.join();
         } catch (InterruptedException e) {
             Log.e("Error:", "joining thread");
         }
