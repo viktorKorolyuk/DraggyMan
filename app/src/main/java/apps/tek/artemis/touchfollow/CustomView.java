@@ -17,13 +17,15 @@ import java.util.ArrayList;
 public class CustomView extends SurfaceView implements Runnable {
 
 
+    Thread timer = null;
+    boolean enemyAdd = false;
+    Rect[] spikeRect;
+    int score = 0;
     private Thread th = null;
     private SurfaceHolder sh;
     private Canvas canvas = null;
     private Thread animationFrame;
     private Thread addEnemy;
-    Thread timer = null;
-    boolean enemyAdd = false;
     private float y, x;
     private Player pl;
     private Background bg;
@@ -36,12 +38,10 @@ public class CustomView extends SurfaceView implements Runnable {
     private long frames;
     private long WIDTH, HEIGHT;
     private Paint background;
-    Rect[] spikeRect;
-    int score = 0;
     private Paint paint;
 
     private boolean turningOff = true;
-
+    private boolean live = true;
 
 
     public CustomView(Context context) {
@@ -82,10 +82,10 @@ public class CustomView extends SurfaceView implements Runnable {
 
         if (sh.getSurface().isValid()) {
 
-            canvas = sh.lockCanvas();
-            WIDTH = canvas.getWidth();
-            HEIGHT = canvas.getHeight();
-
+            if (live) {
+                canvas = sh.lockCanvas();
+                WIDTH = canvas.getWidth();
+                HEIGHT = canvas.getHeight();
 
 
                 canvas.drawPaint(background); //code to clean page
@@ -108,9 +108,9 @@ public class CustomView extends SurfaceView implements Runnable {
                     paint.setTextAlign(Paint.Align.CENTER);
                     canvas.drawText("Score: " + score, (canvas.getWidth() / 2), canvas.getHeight() - paint.getTextSize(), paint);
 
-
-
                 }
+
+            }
             sh.unlockCanvasAndPost(canvas);
 
 
@@ -118,8 +118,6 @@ public class CustomView extends SurfaceView implements Runnable {
 
 
     }
-
-
 
 
     @Override
@@ -147,9 +145,7 @@ public class CustomView extends SurfaceView implements Runnable {
         }
 
 
-
-
-       // invalidate();
+        // invalidate();
         return true;
 
     }
@@ -160,8 +156,8 @@ public class CustomView extends SurfaceView implements Runnable {
         while (running) {
             draw();
 
-                if (turningOff) {
-                    checkCollision();
+            if (turningOff) {
+                checkCollision();
 
                 frames++;
                 //   System.out.println(frames);
@@ -195,7 +191,7 @@ public class CustomView extends SurfaceView implements Runnable {
                 for (int i = 0; i < spikeRect.length; i++) {
 
                     if (spikeRect[i] != null && player != null) {
-                     //   System.out.println("Checking Rectangle #" + i);
+                        //   System.out.println("Checking Rectangle #" + i);
                         if (Rect.intersects(player, spikeRect[i])) {
                             stopGame();
 
@@ -236,7 +232,7 @@ public class CustomView extends SurfaceView implements Runnable {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                      //  enemy++;
+                        //  enemy++;
                         initialiseEnemy(enemy);
 
                     }
@@ -248,7 +244,6 @@ public class CustomView extends SurfaceView implements Runnable {
         }
 
     }
-
 
 
     private void stopGame() {
