@@ -110,6 +110,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
                 }
 
+
             }
             sh.unlockCanvasAndPost(canvas);
 
