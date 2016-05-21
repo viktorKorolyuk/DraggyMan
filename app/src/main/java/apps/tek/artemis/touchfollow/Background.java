@@ -8,7 +8,7 @@ public class Background {
 
     private Bitmap bg;
     private CustomView vv;
-    private int x,y,y2,y3,dx,dy = 5;
+    private int x, y, y2, y3, dx, dy = 2;
     private boolean runOnce;
 
     public Background(Bitmap res, CustomView v){

@@ -1,6 +1,7 @@
 package apps.tek.artemis.touchfollow;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -39,9 +40,12 @@ public class CustomView extends SurfaceView implements Runnable {
     private long WIDTH, HEIGHT;
     private Paint background;
     private Paint paint;
+    private boolean mode;
+    private Bitmap retry;
 
     private boolean turningOff = true;
     private boolean live = true;
+    private boolean runningTimer = true;
 
 
     public CustomView(Context context) {
@@ -57,6 +61,7 @@ public class CustomView extends SurfaceView implements Runnable {
         background = new Paint();
         background.setColor(Color.WHITE);
 
+        retry = BitmapFactory.decodeResource(getResources(), R.drawable.retrybutton_draggyman);
 
     }
 
@@ -81,34 +86,48 @@ public class CustomView extends SurfaceView implements Runnable {
     public void draw() {
 
         if (sh.getSurface().isValid()) {
+            if (!mode) {
+                if (live) {
+                    canvas = sh.lockCanvas();
+                    WIDTH = canvas.getWidth();
+                    HEIGHT = canvas.getHeight();
 
-            if (live) {
-                canvas = sh.lockCanvas();
-                WIDTH = canvas.getWidth();
-                HEIGHT = canvas.getHeight();
+
+                    canvas.drawPaint(background); //code to clean page
+                    bg.update();
+                    bg.draw(canvas);
+
+                    pl.draw(canvas);
+
+                    for (int i = 0; i < spikes.size(); i++) {
+                        if (spikes.get(i) != null) {
+                            spikes.get(i).update();
+                            spikes.get(i).draw(canvas);
+                        }
 
 
-                canvas.drawPaint(background); //code to clean page
-                bg.update();
-                bg.draw(canvas);
+                        paint.setColor(Color.BLACK);
 
-                pl.draw(canvas);
+                        paint.setTextSize(50);
+                        paint.setFakeBoldText(true);
+                        paint.setTextAlign(Paint.Align.CENTER);
 
-                for (int i = 0; i < spikes.size(); i++) {
-                    if (spikes.get(i) != null) {
-                        spikes.get(i).update();
-                        spikes.get(i).draw(canvas);
+
+                        canvas.drawText("Score: " + score, (canvas.getWidth() / 2), canvas.getHeight() - paint.getTextSize(), paint);
+
                     }
 
 
-                    paint.setColor(Color.BLACK);
-
-                    paint.setTextSize(50);
-                    paint.setFakeBoldText(true);
-                    paint.setTextAlign(Paint.Align.CENTER);
-                    canvas.drawText("Score: " + score, (canvas.getWidth() / 2), canvas.getHeight() - paint.getTextSize(), paint);
-
                 }
+            } else {
+                canvas = sh.lockCanvas();
+                canvas.drawColor(Color.parseColor("#ff6666")); //draw a color
+                paint.setColor(Color.WHITE);
+
+                retry = Bitmap.createScaledBitmap(retry, canvas.getWidth() / 2, canvas.getWidth() / 2, false);
+
+                canvas.drawText("Score: " + score, canvas.getWidth() / 2, canvas.getHeight() / 4, paint);
+                canvas.drawBitmap(retry, canvas.getWidth() - (retry.getWidth() + retry.getWidth() / 2), canvas.getHeight() - retry.getHeight(), null);
 
 
             }
@@ -140,6 +159,7 @@ public class CustomView extends SurfaceView implements Runnable {
                 anim = false;
                 pl.update(x, y + 15);
                 //     System.out.println("" + x + " " + y);
+
                 break;
             default:
                 return false;
@@ -255,21 +275,27 @@ public class CustomView extends SurfaceView implements Runnable {
         initialiseEnemy(enemy);
         runEnemy = false;
         enemyAdd = false;
+        runningTimer = false;
+
         try {
             addEnemy.interrupt(); //thanks to my dad for suggesting this code, it really helped :)
             addEnemy.join();
+            timer.interrupt();
+            timer.join();
 
 
         } catch (InterruptedException e) {
             Log.e("Error:", "joining thread");
         }
         turningOff = true;
+        mode = true;
 
     }
 
 
     public void resume() {
         running = true;
+        runningTimer = true;
         th = new Thread(this);
         th.start();
         animationFrame = new Thread(new Runnable() {
@@ -282,7 +308,7 @@ public class CustomView extends SurfaceView implements Runnable {
                             stage = 1;
                         } else if (stage == 1) {
                             pl.changeState(BitmapFactory.decodeResource(getResources(), R.drawable.bobbyv1po2));
-                            draw();
+
                             stage = 0;
                         }
                         try {
@@ -300,7 +326,8 @@ public class CustomView extends SurfaceView implements Runnable {
         timer = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (running) {
+
+                while (runningTimer) {
 
                     System.out.println("Score: " + score);
                     try {
@@ -317,6 +344,7 @@ public class CustomView extends SurfaceView implements Runnable {
 
     public void pause() {
         running = false;
+        runningTimer = false;
         try {
             th.join();
             animationFrame.join();
